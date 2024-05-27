@@ -1,5 +1,6 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'login.dart'; // Import the LoginScreen
 
 List onboardingData = [
   {
@@ -110,30 +111,38 @@ class _OnboardingViewState extends State<OnBoardingView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 148,
-                height: 55,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: grayColor),
-                  boxShadow: [
-                    BoxShadow(
-                      color: grayColor,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    "Masuk",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: "InterBold",
-                      fontSize: 14,
-                      color: fontGrayDarkColor,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginView()),
+                  );
+                },
+                child: Container(
+                  width: 148,
+                  height: 55,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: grayColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: grayColor,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Masuk",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: "InterBold",
+                        fontSize: 14,
+                        color: fontGrayDarkColor,
+                      ),
                     ),
                   ),
                 ),
