@@ -1,6 +1,7 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginScreen
+import 'register.dart'; // Import the RegisterView
 
 List onboardingData = [
   {
@@ -41,8 +42,10 @@ class _OnboardingViewState extends State<OnBoardingView> {
         curve: Curves.easeInOut,
       );
     } else {
-      // Perform action for the last page, e.g., navigate to another screen
-      print("Navigate to another screen or perform another action.");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RegisterView()),
+      );
     }
   }
 
