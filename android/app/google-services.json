@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "873823054841",
+    "project_id": "aksun-9a543",
+    "storage_bucket": "aksun-9a543.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873823054841:android:473f6371d54369f473eb28",
+        "android_client_info": {
+          "package_name": "com.example.aplikasi_aksun"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYC_VJclbVCPqewZryCkTeSxkUQH02Bnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

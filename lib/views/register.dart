@@ -1,6 +1,7 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginScreen
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -13,6 +14,8 @@ class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
   bool isHidePassword = true;
   bool isHideConfirmPassword = true;
+  TextEditingController emailController =
+      TextEditingController(); // Added emailController
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 
@@ -92,6 +95,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 10),
                       TextFormField(
+                        controller: emailController, // Use the emailController
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -205,9 +209,29 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Handle the "Daftar" button tap here
+                            try {
+                              await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Registration Successful!')),
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginView()),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Registration Failed: $e')),
+                              );
+                            }
                           }
                         },
                         child: Container(

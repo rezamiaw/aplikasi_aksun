@@ -1,6 +1,8 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
+import 'package:aplikasi_aksun/views/homepage.dart';
 import 'package:flutter/material.dart';
 import 'register.dart'; // Import the RegisterView
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -12,6 +14,8 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool isHide = true;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +70,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         SizedBox(height: 10),
                         TextFormField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -99,6 +104,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         SizedBox(height: 10),
                         TextFormField(
+                          controller: passwordController,
                           obscureText: isHide,
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
@@ -134,9 +140,27 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         SizedBox(height: 20),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             if (_formKey.currentState!.validate()) {
-                              // Handle the "Masuk" button tap here
+                              try {
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                  email: emailController.text,
+                                  password: passwordController.text,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Login Successful!')),
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePageView()),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Login Failed: $e')),
+                                );
+                              }
                             }
                           },
                           child: Container(
