@@ -1,7 +1,10 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:aplikasi_aksun/views/homepage.dart';
+import 'package:aplikasi_aksun/views/login.dart';
 import 'package:aplikasi_aksun/views/onboarding.dart';
+import 'package:aplikasi_aksun/views/rank.dart';
 import 'package:aplikasi_aksun/views/register.dart';
+import 'package:aplikasi_aksun/views/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: greenColor),
         useMaterial3: true,
       ),
-      home: const OnBoardingView(),
+      home: const LoginView(),
     );
   }
 }

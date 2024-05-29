@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePageView extends StatefulWidget {
+  final String nama = "User"; // Set the default name
+
   const HomePageView({super.key});
 
   @override
@@ -66,7 +68,7 @@ class _HomePageViewState extends State<HomePageView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hi, Bahtiar!',
+                          'Hi, ${widget.nama}!',
                           style: TextStyle(
                             fontSize: 24,
                             fontFamily: "InterSemibold",

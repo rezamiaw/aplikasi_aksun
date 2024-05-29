@@ -14,6 +14,7 @@ class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
   bool isHidePassword = true;
   bool isHideConfirmPassword = true;
+  TextEditingController namaController = TextEditingController();
   TextEditingController emailController =
       TextEditingController(); // Added emailController
   TextEditingController passwordController = TextEditingController();
@@ -66,6 +67,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 10),
                       TextFormField(
+                        controller: namaController, // Use the namaController
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
