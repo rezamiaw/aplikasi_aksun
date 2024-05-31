@@ -9,3 +9,4 @@ const Color softwhite = Color(0xffF9F9FC);
 const Color greenlightColor = Color(0xff90D26D);
 const Color bluelightColor = Color(0xff5AB2FF);
 const Color redlightColor = Color(0xffFA7070);
+const Color whitesoft = Color(0xffE5E5E5);
