@@ -10,3 +10,6 @@ const Color greenlightColor = Color(0xff90D26D);
 const Color bluelightColor = Color(0xff5AB2FF);
 const Color redlightColor = Color(0xffFA7070);
 const Color whitesoft = Color(0xffE5E5E5);
+const Color bluesoft = Color(0xff84D8FF);
+const Color darkred = Color(0xffC85454);
+const Color red = Color(0xffDE5E5E);

@@ -6,42 +6,80 @@ List<Map<String, dynamic>> bankSoal = [
     "options": ["ᮃ", "ᮇ", "ᮏ", "ᮜ"],
     "answer": "ᮃ",
     "level": 1,
-    "category": "basic"
+    "category": "basic",
+    "mode": "2x2"
+  },
+  {
+    "question": "Mana jawaban yang benar?",
+    "options": ["ᮄ", "ᮃ", "ᮜ", "ᮇ"],
+    "answer": "ᮄ",
+    "level": 1,
+    "category": "basic",
+    "mode": "2x2"
+  },
+  {
+    "question": "a",
+    "options": ["ᮃ", "ᮇ", "ᮏ", "ᮜ"],
+    "answer": "ᮃ",
+    "level": 1,
+    "category": "basic",
+    "mode": "2x2"
   },
   {
     "question": "b",
     "options": ["ᮄ", "ᮃ", "ᮜ", "ᮇ"],
     "answer": "ᮄ",
     "level": 1,
-    "category": "basic"
+    "category": "basic",
+    "mode": "2x2"
+  },
+  {
+    "question": "a",
+    "options": ["ᮃ", "ᮇ", "ᮏ", "ᮜ"],
+    "answer": "ᮃ",
+    "level": 1,
+    "category": "basic",
+    "mode": "1x4"
+  },
+  {
+    "question": "b",
+    "options": ["ᮄ", "ᮃ", "ᮜ", "ᮇ"],
+    "answer": "ᮄ",
+    "level": 1,
+    "category": "basic",
+    "mode": "1x4"
   },
   {
     "question": "c",
     "options": ["ᮃ", "ᮇ", "ᮏ", "ᮜ"],
     "answer": "ᮃ",
     "level": 2,
-    "category": "advanced"
+    "category": "advanced",
+    "mode": "2x2"
   },
   {
     "question": "d",
     "options": ["ᮄ", "ᮃ", "ᮜ", "ᮇ"],
     "answer": "ᮄ",
     "level": 2,
-    "category": "advanced"
+    "category": "advanced",
+    "mode": "2x2"
   },
   {
     "question": "e",
     "options": ["ᮃ", "ᮇ", "ᮏ", "ᮜ"],
     "answer": "ᮃ",
     "level": 3,
-    "category": "expert"
+    "category": "expert",
+    "mode": "1x4"
   },
   {
     "question": "f",
     "options": ["ᮄ", "ᮃ", "ᮜ", "ᮇ"],
     "answer": "ᮄ",
     "level": 3,
-    "category": "expert"
+    "category": "expert",
+    "mode": "1x4"
   },
   // Tambahkan soal lainnya dengan level dan kategori yang sesuai
 ];

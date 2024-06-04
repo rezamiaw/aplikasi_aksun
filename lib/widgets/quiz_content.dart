@@ -21,7 +21,9 @@ class _QuizContentState extends State<QuizContent> {
   int currentQuestionIndex = 0;
   Map<int, String> selectedAnswers = {};
   bool showScoreboard = false;
-  int remainingTime = 30; // Set timer to 30 seconds
+  bool answerChecked = false; // Added variable
+  bool showErrorMessage = false; // Added variable
+  int remainingTime = 444; // Set timer to 30 seconds
   Timer? timer;
 
   @override
@@ -53,23 +55,27 @@ class _QuizContentState extends State<QuizContent> {
     });
   }
 
+  void checkAnswer() {
+    if (selectedAnswers.containsKey(currentQuestionIndex)) {
+      setState(() {
+        answerChecked = true;
+        showErrorMessage = selectedAnswers[currentQuestionIndex] !=
+            widget.questions[currentQuestionIndex]['answer'];
+      });
+    }
+  }
+
   void nextQuestion() {
     if (currentQuestionIndex < widget.questions.length - 1) {
       setState(() {
         currentQuestionIndex++;
+        answerChecked = false; // Reset check status for new question
+        showErrorMessage = false; // Reset error message for new question
       });
     } else {
       setState(() {
         showScoreboard = true;
         timer?.cancel(); // Stop the timer when showing scoreboard
-      });
-    }
-  }
-
-  void previousQuestion() {
-    if (currentQuestionIndex > 0) {
-      setState(() {
-        currentQuestionIndex--;
       });
     }
   }
@@ -171,6 +177,8 @@ class _QuizContentState extends State<QuizContent> {
                 bottomRight: Radius.circular(8.0),
               );
 
+    int crossAxisCount = currentQuestion['mode'] == '2x2' ? 2 : 1;
+
     return Column(
       children: [
         ClipRRect(
@@ -184,7 +192,7 @@ class _QuizContentState extends State<QuizContent> {
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(30, 15, 30, 25),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -196,29 +204,133 @@ class _QuizContentState extends State<QuizContent> {
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ),
-                ...List.generate(currentQuestion['options'].length, (index) {
-                  var option = currentQuestion['options'][index];
-                  return RadioListTile(
-                    title: Text(option),
-                    value: option,
-                    groupValue: selectedAnswers[currentQuestionIndex],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedAnswers[currentQuestionIndex] = value as String;
-                      });
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: crossAxisCount == 2
+                              ? constraints.maxWidth / constraints.maxHeight
+                              : constraints.maxWidth /
+                                  50, // Set height to 50 for 1x4 mode
+                          crossAxisSpacing: 16.0,
+                          mainAxisSpacing: 16.0,
+                        ),
+                        itemCount: currentQuestion['options'].length,
+                        itemBuilder: (context, index) {
+                          var option = currentQuestion['options'][index];
+                          bool isCorrect = option == currentQuestion['answer'];
+                          bool isSelected =
+                              selectedAnswers[currentQuestionIndex] == option;
+
+                          return GestureDetector(
+                            onTap: () {
+                              if (!answerChecked) {
+                                setState(() {
+                                  selectedAnswers[currentQuestionIndex] =
+                                      option;
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: currentQuestion['mode'] == '1x4'
+                                  ? 50
+                                  : constraints.maxHeight /
+                                      2, // Set height based on mode
+                              decoration: BoxDecoration(
+                                color: answerChecked
+                                    ? isCorrect
+                                        ? Colors.green.withOpacity(0.5)
+                                        : isSelected
+                                            ? Colors.red.withOpacity(0.5)
+                                            : Colors.white
+                                    : isSelected
+                                        ? bluesoft.withOpacity(0.5)
+                                        : Colors.white,
+                                borderRadius: BorderRadius.circular(8.0),
+                                border:
+                                    Border.all(color: whitesoft, width: 1.0),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  option,
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: answerChecked
+                                        ? isCorrect
+                                            ? Colors.green
+                                            : isSelected
+                                                ? Colors.red
+                                                : Colors.black
+                                        : isSelected
+                                            ? bluesoft
+                                            : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
-                  );
-                }),
+                  ),
+                ),
+                SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(
-                      onPressed: previousQuestion,
-                      child: Text('Previous'),
-                    ),
-                    ElevatedButton(
-                      onPressed: nextQuestion,
-                      child: Text('Next'),
+                    if (answerChecked)
+                      Text(
+                        showErrorMessage ? 'KAMU SALAH!' : 'KAMU BENAR!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "InterSemiBold",
+                          color: showErrorMessage ? red : greenColor,
+                        ),
+                      ),
+                    SizedBox(height: 8.0), // Add some spacing
+                    InkWell(
+                      onTap: selectedAnswers.containsKey(currentQuestionIndex)
+                          ? answerChecked
+                              ? nextQuestion
+                              : checkAnswer
+                          : null,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: selectedAnswers
+                                  .containsKey(currentQuestionIndex)
+                              ? (showErrorMessage ? red : greenColor)
+                              : Colors
+                                  .grey, // Background color based on condition
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: selectedAnswers
+                                      .containsKey(currentQuestionIndex)
+                                  ? (showErrorMessage
+                                      ? darkred
+                                      : darkgreenColor)
+                                  : Colors
+                                      .black45, // Shadow color based on condition
+                              offset: Offset(0, 4), // Shadow position
+                            ),
+                          ],
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Center(
+                          child: Text(
+                            answerChecked ? 'SELANJUTNYA' : 'PERIKSA',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: "InterSemiBold",
+                              color: Colors.white, // Text color
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

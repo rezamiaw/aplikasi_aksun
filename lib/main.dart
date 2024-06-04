@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: greenColor),
         useMaterial3: true,
       ),
-      home: const HomePageView(),
+      home: const OnBoardingView(),
     );
   }
 }
