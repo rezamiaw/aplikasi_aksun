@@ -2,6 +2,7 @@ import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginScreen
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -14,11 +15,24 @@ class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
   bool isHidePassword = true;
   bool isHideConfirmPassword = true;
+  bool isPressedRegister = false;
+  bool isPressedGoogle = false;
   TextEditingController namaController = TextEditingController();
-  TextEditingController emailController =
-      TextEditingController(); // Added emailController
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+
+  void _onButtonPressedRegister(bool pressed) {
+    setState(() {
+      isPressedRegister = pressed;
+    });
+  }
+
+  void _onButtonPressedGoogle(bool pressed) {
+    setState(() {
+      isPressedGoogle = pressed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +81,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 10),
                       TextFormField(
-                        controller: namaController, // Use the namaController
+                        controller: namaController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -97,7 +111,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 10),
                       TextFormField(
-                        controller: emailController, // Use the emailController
+                        controller: emailController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -211,14 +225,27 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () async {
+                        onTapDown: (_) => _onButtonPressedRegister(true),
+                        onTapUp: (_) async {
+                          _onButtonPressedRegister(false);
                           if (_formKey.currentState!.validate()) {
                             try {
-                              await FirebaseAuth.instance
+                              UserCredential userCredential = await FirebaseAuth
+                                  .instance
                                   .createUserWithEmailAndPassword(
                                 email: emailController.text,
                                 password: passwordController.text,
                               );
+
+                              // Save the user's name to Firestore
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(userCredential.user!.uid)
+                                  .set({
+                                'name': namaController.text,
+                                'email': emailController.text,
+                              });
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                     content: Text('Registration Successful!')),
@@ -236,18 +263,22 @@ class _RegisterViewState extends State<RegisterView> {
                             }
                           }
                         },
-                        child: Container(
-                          width: double.infinity, // Make the button full width
+                        onTapCancel: () => _onButtonPressedRegister(false),
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          width: double.infinity,
                           height: 55,
                           decoration: BoxDecoration(
                             color: greenColor,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: darkgreenColor,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            boxShadow: isPressedRegister
+                                ? []
+                                : [
+                                    BoxShadow(
+                                      color: darkgreenColor,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                           ),
                           child: Center(
                             child: Text(
@@ -262,7 +293,7 @@ class _RegisterViewState extends State<RegisterView> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20), // Add some space before the divider
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
@@ -289,22 +320,28 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                       SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () {
+                        onTapDown: (_) => _onButtonPressedGoogle(true),
+                        onTapUp: (_) {
+                          _onButtonPressedGoogle(false);
                           // Handle the "Daftar Dengan Google" button tap here
                         },
-                        child: Container(
-                          width: double.infinity, // Make the button full width
+                        onTapCancel: () => _onButtonPressedGoogle(false),
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          width: double.infinity,
                           height: 55,
                           decoration: BoxDecoration(
                             color: softwhite,
                             border: Border.all(color: grayColor),
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: grayColor,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            boxShadow: isPressedGoogle
+                                ? []
+                                : [
+                                    BoxShadow(
+                                      color: grayColor,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,

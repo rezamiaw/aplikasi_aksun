@@ -7,6 +7,8 @@ import 'package:aplikasi_aksun/views/quiz_level2.dart';
 import 'package:aplikasi_aksun/views/quiz_level3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -40,23 +42,59 @@ class _HomePageViewState extends State<HomePageView> {
     {"level": "Level 3", "questions": "20 Soal", "difficulty": "Hard"},
   ];
 
+  Future<Map<String, String>> _getUserName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      return {
+        'name': userDoc['name'] ?? "User",
+      };
+    }
+    return {'name': 'User'};
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildMateriSection(),
-            _buildQuizSection(),
-            SizedBox(height: 100), // Add some space at the bottom
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        return false; // Disable back button
+      },
+      child: Scaffold(
+        body: FutureBuilder<Map<String, String>>(
+          future: _getUserName(),
+          builder: (BuildContext context,
+              AsyncSnapshot<Map<String, String>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              final userInfo = snapshot.data!;
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildHeader(userInfo['name']!),
+                    _buildMateriSection(),
+                    _buildQuizSection(),
+                    SizedBox(height: 100), // Add some space at the bottom
+                  ],
+                ),
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(String userName) {
     return Stack(
       children: [
         Container(
@@ -65,9 +103,9 @@ class _HomePageViewState extends State<HomePageView> {
         ),
         Positioned(
           top: 21, // Adjusted top position to 21
-          right: -21,
-          child: Image.asset(
-            'assets/images/vektor.png',
+          right: -45,
+          child: SvgPicture.asset(
+            'assets/images/ilustrasi.svg',
             width: 201.5, // Adjust the width as needed
             height: 178.17, // Adjust the height as needed
           ),
@@ -83,7 +121,7 @@ class _HomePageViewState extends State<HomePageView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hi, Nishu!',
+                  'Hi, $userName! 👋',
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: "InterSemibold",
@@ -233,29 +271,7 @@ class _HomePageViewState extends State<HomePageView> {
                 padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
                 child: GestureDetector(
                   onTap: () {
-                    switch (index) {
-                      case 0:
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => QuizLevel1Page()),
-                        );
-                        break;
-                      case 1:
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => QuizLevel2Page()),
-                        );
-                        break;
-                      case 2:
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => QuizLevel3Page()),
-                        );
-                        break;
-                    }
+                    _showQuizConfirmationDialog(context, index);
                   },
                   child: Container(
                     width: 350, // Adjust the width as needed
@@ -341,6 +357,86 @@ class _HomePageViewState extends State<HomePageView> {
       ],
     );
   }
+
+  void _showQuizConfirmationDialog(BuildContext context, int index) {
+    String level = levelList[index]['level']!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.quiz, color: greenColor),
+              SizedBox(width: 10),
+              Text(
+                "Mulai Kuis",
+                style: TextStyle(fontFamily: "InterSemiBold"),
+              ),
+            ],
+          ),
+          content: Text(
+            "Apakah Anda siap untuk memulai $level?",
+            style: TextStyle(fontFamily: "InterRegular"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text("Batal"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: greenColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text("Mulai"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _navigateToQuizLevel(context, index);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _navigateToQuizLevel(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => QuizLevel1Page()),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => QuizLevel2Page()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => QuizLevel3Page()),
+        );
+        break;
+    }
+  }
 }
 
 void main() {
@@ -348,3 +444,4 @@ void main() {
     home: HomePageView(),
   ));
 }
+//

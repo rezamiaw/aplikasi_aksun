@@ -68,5 +68,6 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.3.0') // Add this line
     implementation 'com.google.firebase:firebase-auth' // Add this line
+    
 }
 

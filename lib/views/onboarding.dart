@@ -34,6 +34,8 @@ class OnBoardingView extends StatefulWidget {
 class _OnboardingViewState extends State<OnBoardingView> {
   final PageController pageController = PageController();
   int currentPage = 0;
+  bool isPressedContinue = false;
+  bool isPressedLogin = false;
 
   void _onContinuePressed() {
     if (currentPage < onboardingData.length - 1) {
@@ -47,6 +49,18 @@ class _OnboardingViewState extends State<OnBoardingView> {
         MaterialPageRoute(builder: (context) => RegisterView()),
       );
     }
+  }
+
+  void _onButtonPressedContinue(bool pressed) {
+    setState(() {
+      isPressedContinue = pressed;
+    });
+  }
+
+  void _onButtonPressedLogin(bool pressed) {
+    setState(() {
+      isPressedLogin = pressed;
+    });
   }
 
   @override
@@ -71,22 +85,28 @@ class _OnboardingViewState extends State<OnBoardingView> {
                       child: Image.asset(onboardingData[i]["image"]),
                     ),
                     SizedBox(height: 20),
-                    Text(
-                      onboardingData[i]["title"],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "InterBold",
-                        fontSize: 24,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      child: Text(
+                        onboardingData[i]["title"],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: "InterBold",
+                          fontSize: 24,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      onboardingData[i]["desc"],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "InterRegular",
-                        fontSize: 14,
-                        color: fontGrayLightColor,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      child: Text(
+                        onboardingData[i]["desc"],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: "InterRegular",
+                          fontSize: 14,
+                          color: fontGrayLightColor,
+                        ),
                       ),
                     ),
                   ],
@@ -115,13 +135,17 @@ class _OnboardingViewState extends State<OnBoardingView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () {
+                onTapDown: (_) => _onButtonPressedLogin(true),
+                onTapUp: (_) {
+                  _onButtonPressedLogin(false);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginView()),
                   );
                 },
-                child: Container(
+                onTapCancel: () => _onButtonPressedLogin(false),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
                   width: 148,
                   height: 55,
                   padding:
@@ -130,12 +154,14 @@ class _OnboardingViewState extends State<OnBoardingView> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: grayColor),
-                    boxShadow: [
-                      BoxShadow(
-                        color: grayColor,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    boxShadow: isPressedLogin
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: grayColor,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
                   child: Center(
                     child: Text(
@@ -152,8 +178,14 @@ class _OnboardingViewState extends State<OnBoardingView> {
               ),
               SizedBox(width: 10),
               GestureDetector(
-                onTap: _onContinuePressed,
-                child: Container(
+                onTapDown: (_) => _onButtonPressedContinue(true),
+                onTapUp: (_) {
+                  _onButtonPressedContinue(false);
+                  _onContinuePressed();
+                },
+                onTapCancel: () => _onButtonPressedContinue(false),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 100),
                   width: 148,
                   height: 55,
                   padding:
@@ -161,12 +193,14 @@ class _OnboardingViewState extends State<OnBoardingView> {
                   decoration: BoxDecoration(
                     color: greenColor,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: darkgreenColor,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    boxShadow: isPressedContinue
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: darkgreenColor,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
                   child: Center(
                     child: Text(

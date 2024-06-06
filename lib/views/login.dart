@@ -15,8 +15,22 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool isHide = true;
+  bool isPressedLogin = false;
+  bool isPressedGoogle = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void _onButtonPressedLogin(bool pressed) {
+    setState(() {
+      isPressedLogin = pressed;
+    });
+  }
+
+  void _onButtonPressedGoogle(bool pressed) {
+    setState(() {
+      isPressedGoogle = pressed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,10 +155,12 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         SizedBox(height: 20),
                         GestureDetector(
-                          onTap: () async {
+                          onTapDown: (_) => _onButtonPressedLogin(true),
+                          onTapUp: (_) {
+                            _onButtonPressedLogin(false);
                             if (_formKey.currentState!.validate()) {
                               try {
-                                await FirebaseAuth.instance
+                                FirebaseAuth.instance
                                     .signInWithEmailAndPassword(
                                   email: emailController.text,
                                   password: passwordController.text,
@@ -164,19 +180,22 @@ class _LoginViewState extends State<LoginView> {
                               }
                             }
                           },
-                          child: Container(
-                            width:
-                                double.infinity, // Make the button full width
+                          onTapCancel: () => _onButtonPressedLogin(false),
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 200),
+                            width: double.infinity,
                             height: 55,
                             decoration: BoxDecoration(
                               color: greenColor,
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: darkgreenColor,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              boxShadow: isPressedLogin
+                                  ? []
+                                  : [
+                                      BoxShadow(
+                                        color: darkgreenColor,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                             ),
                             child: Center(
                               child: Text(
@@ -219,23 +238,28 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         SizedBox(height: 20),
                         GestureDetector(
-                          onTap: () {
+                          onTapDown: (_) => _onButtonPressedGoogle(true),
+                          onTapUp: (_) {
+                            _onButtonPressedGoogle(false);
                             // Handle the "Masuk Dengan Google" button tap here
                           },
-                          child: Container(
-                            width:
-                                double.infinity, // Make the button full width
+                          onTapCancel: () => _onButtonPressedGoogle(false),
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 200),
+                            width: double.infinity,
                             height: 55,
                             decoration: BoxDecoration(
                               color: softwhite,
                               border: Border.all(color: grayColor),
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: grayColor,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              boxShadow: isPressedGoogle
+                                  ? []
+                                  : [
+                                      BoxShadow(
+                                        color: grayColor,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

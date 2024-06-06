@@ -25,6 +25,8 @@ class _QuizContentState extends State<QuizContent> {
   bool showErrorMessage = false; // Added variable
   int remainingTime = 444; // Set timer to 30 seconds
   Timer? timer;
+  bool isPressedCheck = false; // Added variable for check button
+  bool isPressedNext = false; // Added variable for next button
 
   @override
   void initState() {
@@ -90,6 +92,18 @@ class _QuizContentState extends State<QuizContent> {
     return correct;
   }
 
+  void _onButtonPressedCheck(bool pressed) {
+    setState(() {
+      isPressedCheck = pressed;
+    });
+  }
+
+  void _onButtonPressedNext(bool pressed) {
+    setState(() {
+      isPressedNext = pressed;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (showScoreboard) {
@@ -141,7 +155,7 @@ class _QuizContentState extends State<QuizContent> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: ScoreCard(
-                title: 'NILAI',
+                title: 'POINT',
                 value: score.toStringAsFixed(0),
                 borderColor: Colors.yellow,
                 textColor: Colors.yellow,
@@ -291,13 +305,26 @@ class _QuizContentState extends State<QuizContent> {
                         ),
                       ),
                     SizedBox(height: 8.0), // Add some spacing
-                    InkWell(
-                      onTap: selectedAnswers.containsKey(currentQuestionIndex)
-                          ? answerChecked
-                              ? nextQuestion
-                              : checkAnswer
-                          : null,
-                      child: Container(
+                    GestureDetector(
+                      onTapDown: (_) => answerChecked
+                          ? _onButtonPressedNext(true)
+                          : _onButtonPressedCheck(true),
+                      onTapUp: (_) {
+                        if (answerChecked) {
+                          _onButtonPressedNext(false);
+                          nextQuestion();
+                        } else {
+                          _onButtonPressedCheck(false);
+                          checkAnswer();
+                        }
+                      },
+                      onTapCancel: () {
+                        answerChecked
+                            ? _onButtonPressedNext(false)
+                            : _onButtonPressedCheck(false);
+                      },
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 200),
                         decoration: BoxDecoration(
                           color: selectedAnswers
                                   .containsKey(currentQuestionIndex)
@@ -305,18 +332,21 @@ class _QuizContentState extends State<QuizContent> {
                               : Colors
                                   .grey, // Background color based on condition
                           borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: selectedAnswers
-                                      .containsKey(currentQuestionIndex)
-                                  ? (showErrorMessage
-                                      ? darkred
-                                      : darkgreenColor)
-                                  : Colors
-                                      .black45, // Shadow color based on condition
-                              offset: Offset(0, 4), // Shadow position
-                            ),
-                          ],
+                          boxShadow: (isPressedCheck && !answerChecked) ||
+                                  (isPressedNext && answerChecked)
+                              ? []
+                              : [
+                                  BoxShadow(
+                                    color: selectedAnswers
+                                            .containsKey(currentQuestionIndex)
+                                        ? (showErrorMessage
+                                            ? darkred
+                                            : darkgreenColor)
+                                        : Colors
+                                            .black45, // Shadow color based on condition
+                                    offset: Offset(0, 4), // Shadow position
+                                  ),
+                                ],
                         ),
                         padding:
                             EdgeInsets.symmetric(vertical: 15, horizontal: 20),
