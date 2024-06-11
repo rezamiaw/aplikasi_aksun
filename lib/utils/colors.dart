@@ -13,3 +13,4 @@ const Color whitesoft = Color(0xffE5E5E5);
 const Color bluesoft = Color(0xff84D8FF);
 const Color darkred = Color(0xffC85454);
 const Color red = Color(0xffDE5E5E);
+const Color yellow = Color(0xffFFC800);

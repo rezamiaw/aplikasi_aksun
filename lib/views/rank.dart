@@ -5,14 +5,9 @@ class RankView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false; // Disable back button
-      },
-      child: Scaffold(
-        body: Center(
-          child: Text("Peringkat"),
-        ),
+    return Scaffold(
+      body: Center(
+        child: Text("Peringkat"),
       ),
     );
   }

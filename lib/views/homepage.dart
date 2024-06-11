@@ -2,13 +2,11 @@ import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:aplikasi_aksun/views/marteri3.dart';
 import 'package:aplikasi_aksun/views/materi1.dart';
 import 'package:aplikasi_aksun/views/materi2.dart';
-import 'package:aplikasi_aksun/views/quiz_level1.dart';
-import 'package:aplikasi_aksun/views/quiz_level2.dart';
-import 'package:aplikasi_aksun/views/quiz_level3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:aplikasi_aksun/views/quiz_page.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -42,55 +40,48 @@ class _HomePageViewState extends State<HomePageView> {
     {"level": "Level 3", "questions": "20 Soal", "difficulty": "Hard"},
   ];
 
-  Future<Map<String, String>> _getUserName() async {
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
-      return {
-        'name': userDoc['name'] ?? "User",
-      };
+      setState(() {
+        userName = userDoc['name'] ?? "User";
+      });
+    } else {
+      setState(() {
+        userName = "User";
+      });
     }
-    return {'name': 'User'};
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false; // Disable back button
-      },
-      child: Scaffold(
-        body: FutureBuilder<Map<String, String>>(
-          future: _getUserName(),
-          builder: (BuildContext context,
-              AsyncSnapshot<Map<String, String>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            } else {
-              final userInfo = snapshot.data!;
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildHeader(userInfo['name']!),
-                    _buildMateriSection(),
-                    _buildQuizSection(),
-                    SizedBox(height: 100), // Add some space at the bottom
-                  ],
-                ),
-              );
-            }
-          },
-        ),
-      ),
+    return Scaffold(
+      body: userName == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeader(userName!),
+                  _buildMateriSection(),
+                  _buildQuizSection(),
+                  SizedBox(height: 100), // Add some space at the bottom
+                ],
+              ),
+            ),
     );
   }
 
@@ -420,19 +411,22 @@ class _HomePageViewState extends State<HomePageView> {
       case 0:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => QuizLevel1Page()),
+          MaterialPageRoute(
+              builder: (context) => QuizPage(level: 1, category: "basic")),
         );
         break;
       case 1:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => QuizLevel2Page()),
+          MaterialPageRoute(
+              builder: (context) => QuizPage(level: 2, category: "advanced")),
         );
         break;
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => QuizLevel3Page()),
+          MaterialPageRoute(
+              builder: (context) => QuizPage(level: 3, category: "expert")),
         );
         break;
     }
@@ -444,4 +438,3 @@ void main() {
     home: HomePageView(),
   ));
 }
-//

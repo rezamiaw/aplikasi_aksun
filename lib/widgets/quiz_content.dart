@@ -1,16 +1,21 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
+import 'package:aplikasi_aksun/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter_svg/flutter_svg.dart';
 
 class QuizContent extends StatefulWidget {
   final int level;
   final List<Map<String, dynamic>> questions;
   final Function(int) updateRemainingTime;
+  final Function(bool) updateScoreboard;
 
   const QuizContent({
     required this.level,
     required this.questions,
     required this.updateRemainingTime,
+    required this.updateScoreboard,
   });
 
   @override
@@ -21,12 +26,13 @@ class _QuizContentState extends State<QuizContent> {
   int currentQuestionIndex = 0;
   Map<int, String> selectedAnswers = {};
   bool showScoreboard = false;
-  bool answerChecked = false; // Added variable
-  bool showErrorMessage = false; // Added variable
-  int remainingTime = 444; // Set timer to 30 seconds
+  bool answerChecked = false;
+  bool showErrorMessage = false;
+  int remainingTime = 30;
   Timer? timer;
-  bool isPressedCheck = false; // Added variable for check button
-  bool isPressedNext = false; // Added variable for next button
+  bool isPressedCheck = false;
+  bool isPressedNext = false;
+  bool isPressedLogin = false; // Variable to handle button press state
 
   @override
   void initState() {
@@ -46,10 +52,10 @@ class _QuizContentState extends State<QuizContent> {
         setState(() {
           if (remainingTime > 0) {
             remainingTime--;
-            widget.updateRemainingTime(
-                remainingTime); // Update remaining time in parent widget
+            widget.updateRemainingTime(remainingTime);
           } else {
             showScoreboard = true;
+            widget.updateScoreboard(true);
             timer.cancel();
           }
         });
@@ -71,13 +77,14 @@ class _QuizContentState extends State<QuizContent> {
     if (currentQuestionIndex < widget.questions.length - 1) {
       setState(() {
         currentQuestionIndex++;
-        answerChecked = false; // Reset check status for new question
-        showErrorMessage = false; // Reset error message for new question
+        answerChecked = false;
+        showErrorMessage = false;
       });
     } else {
       setState(() {
         showScoreboard = true;
-        timer?.cancel(); // Stop the timer when showing scoreboard
+        widget.updateScoreboard(true);
+        timer?.cancel();
       });
     }
   }
@@ -111,71 +118,123 @@ class _QuizContentState extends State<QuizContent> {
       int incorrectAnswers = widget.questions.length - correctAnswers;
       double score = (correctAnswers / widget.questions.length) * 100;
 
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/thumbsup.png', // Path to your image asset
-            ),
-            SizedBox(height: 10), // Spacing between image and text
-            Text(
-              'Congratulations!',
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: "InterSemiBold",
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                'Pelajaran Selesai!',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontFamily: "InterBold",
+                  color: yellow,
+                ),
               ),
-            ),
-            SizedBox(height: 10), // Spacing between text and scoreboard
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ScoreCard(
-                    title: 'BENAR',
-                    value: correctAnswers.toString(),
-                    borderColor: Colors.green,
-                    textColor: Colors.green,
-                    backgroundColor: Colors.green,
+              Image.asset(
+                'assets/images/completed.png',
+                width: 250,
+              ),
+
+              SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: ScoreCard(
+                        title: 'BENAR',
+                        value: correctAnswers.toString(),
+                        borderColor: Colors.green,
+                        textColor: Colors.green,
+                        backgroundColor: Colors.green,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: ScoreCard(
+                        title: 'SALAH',
+                        value: incorrectAnswers.toString(),
+                        borderColor: Colors.red,
+                        textColor: Colors.red,
+                        backgroundColor: Colors.red,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: ScoreCard(
+                        title: 'TIMER',
+                        value: '$remainingTime s',
+                        borderColor: Colors.blue,
+                        textColor: Colors.blue,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: ScoreCard(
+                  title: 'POINT',
+                  value: score.toStringAsFixed(0),
+                  borderColor: yellow,
+                  textColor: yellow,
+                  backgroundColor: yellow,
+                ),
+              ),
+              SizedBox(height: 25),
+              // Move the GestureDetector for "BERANDA" button to the bottom
+              Spacer(), // Add a spacer to push the button to the bottom
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                child: GestureDetector(
+                  onTapDown: (_) => setState(() => isPressedLogin = true),
+                  onTapUp: (_) {
+                    setState(() => isPressedLogin = false);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => BottomNavBar()));
+                  },
+                  onTapCancel: () => setState(() => isPressedLogin = false),
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    height: 55,
+                    decoration: BoxDecoration(
+                      color: greenColor,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: isPressedLogin
+                          ? []
+                          : [
+                              BoxShadow(
+                                color: darkgreenColor,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        "BERANDA",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: "InterBold",
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ScoreCard(
-                    title: 'SALAH',
-                    value: incorrectAnswers.toString(),
-                    borderColor: Colors.red,
-                    textColor: Colors.red,
-                    backgroundColor: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: ScoreCard(
-                title: 'POINT',
-                value: score.toStringAsFixed(0),
-                borderColor: Colors.yellow,
-                textColor: Colors.yellow,
-                backgroundColor: Colors.yellow,
               ),
-            ),
-            SizedBox(height: 32), // Add some spacing before the button
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  currentQuestionIndex = 0;
-                  selectedAnswers.clear();
-                  showScoreboard = false;
-                  remainingTime = 30; // Reset timer
-                  startTimer(); // Restart timer
-                });
-              },
-              child: Text('Mulai Lagi'),
-            ),
-          ],
+              SizedBox(height: 25), // Add some space at the bottom
+            ],
+          ),
         ),
       );
     }
@@ -226,8 +285,7 @@ class _QuizContentState extends State<QuizContent> {
                           crossAxisCount: crossAxisCount,
                           childAspectRatio: crossAxisCount == 2
                               ? constraints.maxWidth / constraints.maxHeight
-                              : constraints.maxWidth /
-                                  50, // Set height to 50 for 1x4 mode
+                              : constraints.maxWidth / 50,
                           crossAxisSpacing: 16.0,
                           mainAxisSpacing: 16.0,
                         ),
@@ -250,8 +308,7 @@ class _QuizContentState extends State<QuizContent> {
                             child: Container(
                               height: currentQuestion['mode'] == '1x4'
                                   ? 50
-                                  : constraints.maxHeight /
-                                      2, // Set height based on mode
+                                  : constraints.maxHeight / 2,
                               decoration: BoxDecoration(
                                 color: answerChecked
                                     ? isCorrect
@@ -304,7 +361,7 @@ class _QuizContentState extends State<QuizContent> {
                           color: showErrorMessage ? red : greenColor,
                         ),
                       ),
-                    SizedBox(height: 8.0), // Add some spacing
+                    SizedBox(height: 8.0),
                     GestureDetector(
                       onTapDown: (_) => answerChecked
                           ? _onButtonPressedNext(true)
@@ -326,11 +383,10 @@ class _QuizContentState extends State<QuizContent> {
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 200),
                         decoration: BoxDecoration(
-                          color: selectedAnswers
-                                  .containsKey(currentQuestionIndex)
-                              ? (showErrorMessage ? red : greenColor)
-                              : Colors
-                                  .grey, // Background color based on condition
+                          color:
+                              selectedAnswers.containsKey(currentQuestionIndex)
+                                  ? (showErrorMessage ? red : greenColor)
+                                  : Colors.grey,
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: (isPressedCheck && !answerChecked) ||
                                   (isPressedNext && answerChecked)
@@ -342,9 +398,8 @@ class _QuizContentState extends State<QuizContent> {
                                         ? (showErrorMessage
                                             ? darkred
                                             : darkgreenColor)
-                                        : Colors
-                                            .black45, // Shadow color based on condition
-                                    offset: Offset(0, 4), // Shadow position
+                                        : Colors.black45,
+                                    offset: Offset(0, 4),
                                   ),
                                 ],
                         ),
@@ -356,7 +411,7 @@ class _QuizContentState extends State<QuizContent> {
                             style: TextStyle(
                               fontSize: 14,
                               fontFamily: "InterSemiBold",
-                              color: Colors.white, // Text color
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -392,8 +447,8 @@ class ScoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150,
-      height: 60,
+      width: double.infinity, // Set to take full width of parent
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: borderColor, width: 1),
@@ -403,7 +458,7 @@ class ScoreCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: double.infinity, // Full width
+            width: double.infinity,
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.only(
@@ -427,7 +482,7 @@ class ScoreCard extends StatelessWidget {
               child: Text(
                 value,
                 style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 24,
                     color: textColor,
                     fontFamily: "InterSemiBold"),
               ),
