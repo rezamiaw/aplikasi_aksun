@@ -1,5 +1,4 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
-import 'package:aplikasi_aksun/views/homepage.dart';
 import 'package:aplikasi_aksun/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'register.dart'; // Import the RegisterView

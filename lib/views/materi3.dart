@@ -1,7 +1,7 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class AksaraNgalagenaPage extends StatelessWidget {
+class AksaraAngkaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +20,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Aksara Ngalagena',
+          'Aksara Angka',
           style: TextStyle(
               color: Colors.black, fontFamily: "InterSemiBold", fontSize: 20),
         ),
@@ -42,7 +42,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                'Aksara ngalagena adalah huruf-huruf dasar dalam aksara Sunda yang mewakili konsonan. Setiap huruf ngalagena pada dasarnya memiliki bunyi konsonan yang diikuti oleh vokal "a".',
+                'Aksara angka adalah simbol-simbol yang digunakan untuk menuliskan angka dalam aksara Sunda. Sistem ini berbeda dari sistem penulisan angka Arab yang umum digunakan saat ini.',
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: "InterMedium",
@@ -58,7 +58,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                'Aksara ngalagena terdiri dari 18 huruf dasar. Setiap huruf mewakili konsonan yang berbeda.',
+                'Aksara angka Sunda terdiri dari sepuluh simbol dasar yang mewakili angka 0 hingga 9.',
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: "InterMedium",
@@ -74,7 +74,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                'Aksara ngalagena digunakan sebagai dasar dalam penulisan kata-kata dalam bahasa Sunda. Ketika menulis, huruf-huruf ngalagena dapat digabungkan dengan tanda-tanda vokal (disebut "sandhangan") untuk membentuk berbagai bunyi vokal yang berbeda.',
+                'Aksara angka digunakan dalam konteks penulisan tradisional Sunda untuk menuliskan angka pada teks-teks, catatan, dokumen, dan prasasti.',
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: "InterMedium",
@@ -91,7 +91,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
               SizedBox(height: 8),
               Container(
                 child: Image.asset(
-                  'assets/images/ngalagena.png',
+                  'assets/images/angka.png',
                   fit: BoxFit.contain, // Ensures the image scales properly
                   width: double
                       .infinity, // Makes the image take the full width of the screen
@@ -107,7 +107,7 @@ class AksaraNgalagenaPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                "Kata mama dalam aksara Sunda ditulis dengan huruf ngalagena: ᮙᮙ ",
+                'Misalnya, angka tahun 2023 dalam aksara angka Sunda ditulis sebagai ᮲᮰᮲᮳',
                 style: TextStyle(
                     fontFamily: "InterMedium",
                     fontSize: 16,

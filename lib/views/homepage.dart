@@ -1,9 +1,8 @@
 import 'package:aplikasi_aksun/utils/colors.dart';
-import 'package:aplikasi_aksun/views/marteri3.dart';
 import 'package:aplikasi_aksun/views/materi1.dart';
 import 'package:aplikasi_aksun/views/materi2.dart';
+import 'package:aplikasi_aksun/views/materi3.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplikasi_aksun/views/quiz_page.dart';
@@ -41,22 +40,38 @@ class _HomePageViewState extends State<HomePageView> {
   ];
 
   String? userName;
+  List<Map<String, dynamic>> userData = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
+    _fetchUserData();
   }
 
-  Future<void> _fetchUserName() async {
+  Future<void> _fetchUserData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      // Fetch user data
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
+      userName = userDoc['name'] ?? "User";
+
+      // Fetch quiz results
+      QuerySnapshot quizSnapshot = await FirebaseFirestore.instance
+          .collection('quiz_results')
+          .where('user_id', isEqualTo: user.uid)
+          .get();
+
       setState(() {
-        userName = userDoc['name'] ?? "User";
+        userData = quizSnapshot.docs.map((doc) {
+          return {
+            "level": doc['level'],
+            "points": doc['points'],
+            "timer": doc['timer'],
+          };
+        }).toList();
       });
     } else {
       setState(() {
@@ -78,7 +93,7 @@ class _HomePageViewState extends State<HomePageView> {
                   _buildHeader(userName!),
                   _buildMateriSection(),
                   _buildQuizSection(),
-                  SizedBox(height: 100), // Add some space at the bottom
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -90,24 +105,23 @@ class _HomePageViewState extends State<HomePageView> {
       children: [
         Container(
           height: 216,
-          color: greenColor, // Set your desired background color
+          color: greenColor,
         ),
         Positioned(
-          top: 21, // Adjusted top position to 21
+          top: 21,
           right: -45,
-          child: SvgPicture.asset(
-            'assets/images/ilustrasi.svg',
-            width: 201.5, // Adjust the width as needed
-            height: 178.17, // Adjust the height as needed
+          child: Image.asset(
+            'assets/images/ilustrasi.png',
+            width: 210.5,
+            height: 178.17,
           ),
         ),
         Positioned(
-          top: 96, // Adjusted top position to 96
+          top: 96,
           left: 0,
           right: 0,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 30.0), // Add padding left and right
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -116,8 +130,7 @@ class _HomePageViewState extends State<HomePageView> {
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: "InterSemibold",
-                    color: Colors
-                        .white, // Set text color to contrast the background
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -149,7 +162,7 @@ class _HomePageViewState extends State<HomePageView> {
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: "InterSemibold",
-                color: fontGrayDarkColor, // Set the text color
+                color: fontGrayDarkColor,
               ),
             ),
           ),
@@ -189,8 +202,7 @@ class _HomePageViewState extends State<HomePageView> {
                 child: Container(
                   width: 134,
                   height: 118,
-                  margin: const EdgeInsets.only(
-                      right: 16), // Add margin between items
+                  margin: const EdgeInsets.only(right: 16),
                   padding: const EdgeInsets.fromLTRB(10, 14, 11, 8),
                   decoration: BoxDecoration(
                     color: aksaraColors[index],
@@ -219,10 +231,12 @@ class _HomePageViewState extends State<HomePageView> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(1000),
                           ),
-                          child: SvgPicture.asset(
-                            'assets/icons/Arrow - Right.svg',
-                            width: 24,
-                            height: 24,
+                          child: Transform.rotate(
+                            angle: 2.6, // angle in radians (225 degrees)
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 30.0, // Ubah ukuran sesuai kebutuhan
+                            ),
                           ),
                         ),
                       ),
@@ -249,7 +263,7 @@ class _HomePageViewState extends State<HomePageView> {
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: "InterSemibold",
-                color: fontGrayDarkColor, // Set the text color
+                color: fontGrayDarkColor,
               ),
             ),
           ),
@@ -265,7 +279,7 @@ class _HomePageViewState extends State<HomePageView> {
                     _showQuizConfirmationDialog(context, index);
                   },
                   child: Container(
-                    width: 350, // Adjust the width as needed
+                    width: 350,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -412,7 +426,10 @@ class _HomePageViewState extends State<HomePageView> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => QuizPage(level: 1, category: "basic")),
+              builder: (context) => QuizPage(
+                    level: 1,
+                    category: "basic",
+                  )),
         );
         break;
       case 1:
@@ -431,10 +448,4 @@ class _HomePageViewState extends State<HomePageView> {
         break;
     }
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: HomePageView(),
-  ));
 }

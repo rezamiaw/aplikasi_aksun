@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizContent extends StatefulWidget {
   final int level;
@@ -32,7 +34,7 @@ class _QuizContentState extends State<QuizContent> {
   Timer? timer;
   bool isPressedCheck = false;
   bool isPressedNext = false;
-  bool isPressedLogin = false; // Variable to handle button press state
+  bool isPressedLogin = false;
 
   @override
   void initState() {
@@ -81,11 +83,53 @@ class _QuizContentState extends State<QuizContent> {
         showErrorMessage = false;
       });
     } else {
+      _submitQuizResults();
       setState(() {
         showScoreboard = true;
         widget.updateScoreboard(true);
         timer?.cancel();
       });
+    }
+  }
+
+  Future<void> _submitQuizResults() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      int correctAnswers = calculateCorrectAnswers();
+      double score = (correctAnswers / widget.questions.length) * 100;
+
+      // Periksa apakah ada hasil kuis yang sudah ada untuk pengguna ini dan level ini
+      DocumentSnapshot quizResultDoc = await FirebaseFirestore.instance
+          .collection('quiz_results')
+          .doc('${user.uid}_${widget.level}')
+          .get();
+
+      if (quizResultDoc.exists) {
+        // Jika sudah ada hasil kuis, perbarui jika poin baru lebih tinggi
+        double existingScore = quizResultDoc['points'];
+        if (score > existingScore) {
+          await FirebaseFirestore.instance
+              .collection('quiz_results')
+              .doc('${user.uid}_${widget.level}')
+              .update({
+            'points': score,
+            'timer': remainingTime,
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+        }
+      } else {
+        // Jika tidak ada hasil kuis, tambahkan hasil baru
+        await FirebaseFirestore.instance
+            .collection('quiz_results')
+            .doc('${user.uid}_${widget.level}')
+            .set({
+          'user_id': user.uid,
+          'level': widget.level,
+          'points': score,
+          'timer': remainingTime,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
     }
   }
 
@@ -137,7 +181,6 @@ class _QuizContentState extends State<QuizContent> {
                 'assets/images/completed.png',
                 width: 250,
               ),
-
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -191,8 +234,7 @@ class _QuizContentState extends State<QuizContent> {
                 ),
               ),
               SizedBox(height: 25),
-              // Move the GestureDetector for "BERANDA" button to the bottom
-              Spacer(), // Add a spacer to push the button to the bottom
+              Spacer(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                 child: GestureDetector(
@@ -232,7 +274,7 @@ class _QuizContentState extends State<QuizContent> {
                   ),
                 ),
               ),
-              SizedBox(height: 25), // Add some space at the bottom
+              SizedBox(height: 25),
             ],
           ),
         ),
@@ -447,7 +489,7 @@ class ScoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, // Set to take full width of parent
+      width: double.infinity,
       height: 75,
       decoration: BoxDecoration(
         color: Colors.white,

@@ -27,8 +27,96 @@ class AksaraSwaraPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Center(
-        child: Text('Content for Aksara Swara'),
+      body: Padding(
+        padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Pengertian',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "InterSemiBold",
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Aksara swara adalah huruf-huruf yang mewakili bunyi vokal dalam aksara Sunda. Huruf-huruf ini digunakan untuk menuliskan vokal yang berdiri sendiri tanpa konsonan pendamping.',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "InterMedium",
+                    color: fontGrayLightColor),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Jumlah huruf',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "InterSemiBold",
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Aksara swara dalam aksara Sunda terdiri dari tujuh simbol dasar yang mewakili vokal',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "InterMedium",
+                    color: fontGrayLightColor),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Penggunaan',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "InterSemiBold",
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Aksara swara digunakan untuk menuliskan kata-kata atau suku kata yang dimulai dengan vokal. Dalam penulisan teks, aksara swara digunakan ketika sebuah vokal perlu ditulis sebagai huruf yang berdiri sendiri.',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "InterMedium",
+                    color: fontGrayLightColor),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Daftar Huruf',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "InterSemiBold",
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                child: Image.asset(
+                  'assets/images/swara.png',
+                  fit: BoxFit.contain, // Ensures the image scales properly
+                  width: double
+                      .infinity, // Makes the image take the full width of the screen
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Contoh Penggunaan',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "InterSemiBold",
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Kata "anak" ditulis sebagai ᮃᮔᮊ᮪',
+                style: TextStyle(
+                    fontFamily: "InterMedium",
+                    fontSize: 16,
+                    color: fontGrayLightColor),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
   }
